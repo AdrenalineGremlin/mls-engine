@@ -1,9 +1,12 @@
 package mls_data_classification_engine.mls_engine.security;
 
+import org.springframework.stereotype.Service;
+
 import mls_data_classification_engine.mls_engine.model.AccessType;
 import mls_data_classification_engine.mls_engine.model.ClassifiedDocument;
 import mls_data_classification_engine.mls_engine.model.User;
 
+@Service
 public class AccessDecisionService {
     public boolean hasAccess(User user, ClassifiedDocument document, AccessType access) {
 
