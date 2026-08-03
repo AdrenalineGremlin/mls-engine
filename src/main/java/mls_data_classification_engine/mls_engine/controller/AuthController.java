@@ -15,6 +15,8 @@ import mls_data_classification_engine.mls_engine.model.User;
 public class AuthController {
     private final AuthService authService;
 
+    // register users, creates a hashedpassword
+    // gives default classification and saves user
     @PostMapping("/register")
     public String register(@RequestBody AuthRequest request) {
         // TODO: process POST request
@@ -22,6 +24,9 @@ public class AuthController {
         return savedUser.getUsername();
     }
 
+    // on login looks up user, comapres raw to hash
+    // if correct, generates token, controoller get back token
+    // and saves token in dto authresponse
     @PostMapping("/login")
     public AuthResponse login(@RequestBody AuthRequest request) {
         // TODO: process POST request
