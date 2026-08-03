@@ -1,5 +1,11 @@
 package mls_data_classification_engine.mls_engine.DTO;
 
-public class AuthRequest {
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
+public class AuthRequest {
+    private String username;
+    private String rawpassword;
 }
