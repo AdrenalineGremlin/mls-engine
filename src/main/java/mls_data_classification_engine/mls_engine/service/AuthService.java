@@ -20,6 +20,19 @@ public class AuthService {
         User user = new User(null, ClassificationLevel.UNCLASSIFIED, userName, hashedPass);
         // return saved user
         return userRepository.save(user);
+
+    }
+
+    public String login(String userName, String rawPassword) {
+
+        User lookUp = userRepository.findByUsername(userName).orElseThrow();
+        // check if pass mathces hash
+        boolean checkPass = passwordEncoder.matches(rawPassword, lookUp.getPasswordHash());
+        if (checkPass) {
+            // generate token if it does
+            return jwtService.generateToken(lookUp);
+        }
+        throw new RuntimeException("Invalid Credentials");
     }
 
     public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
