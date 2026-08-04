@@ -9,6 +9,9 @@ import mls_data_classification_engine.mls_engine.DTO.AuthRequest;
 import mls_data_classification_engine.mls_engine.DTO.AuthResponse;
 import mls_data_classification_engine.mls_engine.model.User;
 
+// controller gets http request, extracts data from request
+// hand data to service and package anything that comes back,
+// into http response
 @RestController
 // sets shared url prefix for every endpoint
 @RequestMapping("/auth")
@@ -17,6 +20,8 @@ public class AuthController {
 
     // register users, creates a hashedpassword
     // gives default classification and saves user
+
+    // postmapping for creating
     @PostMapping("/register")
     public String register(@RequestBody AuthRequest request) {
         // TODO: process POST request
@@ -27,6 +32,8 @@ public class AuthController {
     // on login looks up user, comapres raw to hash
     // if correct, generates token, controoller get back token
     // and saves token in dto authresponse
+
+    // postmapping for creating
     @PostMapping("/login")
     public AuthResponse login(@RequestBody AuthRequest request) {
         // TODO: process POST request
