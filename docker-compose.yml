@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: mls-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: mls_engine
+      POSTGRES_USER: mls_admin
+      POSTGRES_PASSWORD: change_me_locally
+    ports:
+      - "5432:5432"
+    volumes:
+      - mls-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  mls-postgres-data:
