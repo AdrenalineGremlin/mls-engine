@@ -1,5 +1,6 @@
 package mls_data_classification_engine.mls_engine.model;
 
+import jakarta.persistence.Table;
 import java.util.UUID;
 
 import jakarta.persistence.Entity;
@@ -17,7 +18,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-
+@Table(name = "app_user")
 public class User {
     /*
      * Id

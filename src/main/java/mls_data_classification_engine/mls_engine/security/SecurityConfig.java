@@ -8,8 +8,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 // to tell spring security how to handle request
+@EnableWebSecurity
 @Configuration
 public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
@@ -24,14 +26,16 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // targets login and register for non authentication and catches everything else
         // turn off csrf because no cookies are being used
+
         http.csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/login", "/register")
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/auth/login", "/auth/register")
                         .permitAll().anyRequest().authenticated())
                 // register jaf into filter chain
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+
     }
 
     public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
