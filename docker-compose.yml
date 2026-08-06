@@ -11,6 +11,26 @@ services:
       - "5432:5432"
     volumes:
       - mls-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mls_admin -d mls_engine"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mls-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mls_engine
+      SPRING_DATASOURCE_USERNAME: mls_admin
+      SPRING_DATASOURCE_PASSWORD: change_me_locally
 
 volumes:
   mls-postgres-data:

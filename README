@@ -1,0 +1,70 @@
+# Classification Engine
+
+A Java/Spring Boot access control system based on the Bell-LaPadula model 
+
+The Two rules that govern it:
+- **No read-up** — you can only read documents at or below your clearance
+- **No write-down** — you can only write documents at or above your clearance (so someone can't leak sensitive info into a lower-classified place)
+
+The Four levels: `UNCLASSIFIED`, `CONFIDENTIAL`, `SECRET`, `TOP_SECRET`.
+
+## Lay out
+
+```
+controller/   - handles HTTP requests, no logic
+service/      - business logic (password hashing, tokens, calls the access check)
+security/     - JWT stuff, the request filter, the actual Bell-LaPadula check, Spring Security config
+repository/   - Spring Data JPA interfaces
+model/        - entities + the ClassificationLevel/AccessType enums
+DTO/          - request/response objects so passwords never leak in a response
+```
+
+The flow for a protected request: client sends a request with a JWT → filter checks the token's valid and figures out who's making the request → controller pulls out the request data → service calls the access decision logic → if allowed, it hits the database.
+
+Auth (who are you) and authorization (what are you allowed to do) are separate on purpose — you can be logged in fine and still get denied by the classification check.
+
+## Decision I Made
+
+- New users cant pick their own clearance level — everyone starts at `UNCLASSIFIED`. Clearance self assign would be a no go for classfication engine based on access control/   decision
+- Passwords are hashed with BCrypt, never stored in plain text.
+- Controllers never return raw `User` objects, so the password hash can't accidentally leak out over the API.
+- No sessions/cookies — it's all JWT, so CSRF protection is turned off since it's not relevant here.
+- If the access check hits something unexpected, it denies by default instead of allowing.
+
+## Stack
+
+Java 21, Spring Boot 4, Spring Security, Spring Data JPA, PostgreSQL, JJWT, Lombok, Docker Compose, JUnit 5.
+
+## Running it
+
+Using Docker Desktop.
+
+and
+
+terminal command
+
+docker-compose up --build
+
+
+That starts Postgres and the app together. API runs on `http://localhost:8081`.
+
+## Endpoints
+
+| Method | Endpoint         | Needs auth? | What it does |
+
+| POST | `/auth/register`   | No |         Creates an account (always UNCLASSIFIED to start) 
+| POST | `/auth/login`      | No |         Logs in, returns a JWT 
+| GET  |  `/documents/{id}` | Yes |        Reads a document if your clearance allows it 
+| POST | `/documents/write` | Yes |        Creates a document if your clearance allows it 
+
+Protected routes need `Authorization: Bearer <token>`.
+
+## Tests
+
+`AccessDecisionServiceTest` covers all six combinations — equal/higher/lower clearance vs. classification, for both read and write.
+
+## Future Updates I would like to do 
+
+- Right now failures (bad password, access denied) just throw a generic exception and return a 500. I Want to swap that for real exception types mapped to proper status codes (401/403/404).
+
+-Ability to raise someones clearance level after regiser
